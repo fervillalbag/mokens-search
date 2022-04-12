@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { GetStaticProps } from 'next'
+import useSWR from 'swr'
 
 import Country from '../components/Country'
 import client from '../config/apollo'
@@ -9,9 +9,19 @@ interface HomeIprops {
   countries: any
 }
 
-const Home: React.FC<HomeIprops> = ({ countries }) => {
+const fetcher = async () => {
+  const { data: dataCountries } = await client.query({
+    query: GET_ALL_COUNTRIES
+  })
+  const countries = dataCountries?.countries || []
+  return countries
+}
+
+const Home: React.FC<HomeIprops> = () => {
   const inputRef = useRef(null)
   const [valueInput, setValueInput] = useState<string>('')
+
+  const { data: countries } = useSWR('/data', fetcher)
 
   const handleResetInput = () => {
     setValueInput('')
@@ -51,7 +61,17 @@ const Home: React.FC<HomeIprops> = ({ countries }) => {
         <div className="border bg-slate-200 border-slate-300 rounded-md mt-3">
           <div className="pt-6 pb-2 px-6 h-[600px] overflow-y-scroll">
             {!countriesFiltered || countriesFiltered.length === 0 ? (
-              <div className="p-10 bg-slate-100 rounded-md"></div>
+              <>
+                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
+                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
+                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
+                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
+                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
+                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
+                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
+                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
+                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
+              </>
             ) : (
               countriesFiltered.map(country => (
                 <Country key={country.code} country={country} />
@@ -62,19 +82,6 @@ const Home: React.FC<HomeIprops> = ({ countries }) => {
       </div>
     </div>
   )
-}
-
-export const getStaticProps: GetStaticProps = async () => {
-  const { data: dataCountries } = await client.query({
-    query: GET_ALL_COUNTRIES
-  })
-  const countries = dataCountries?.countries || []
-
-  return {
-    props: {
-      countries
-    }
-  }
 }
 
 export default Home
