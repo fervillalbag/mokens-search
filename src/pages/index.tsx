@@ -4,9 +4,10 @@ import useSWR from 'swr'
 import Country from '../components/Country'
 import client from '../config/apollo'
 import { GET_ALL_COUNTRIES } from '../graphql/queries/countries'
+import { CountryType } from '../interfaces'
 
 interface HomeIprops {
-  countries: any
+  countries: CountryType[]
 }
 
 const fetcher = async () => {
@@ -60,7 +61,7 @@ const Home: React.FC<HomeIprops> = () => {
 
         <div className="border bg-slate-200 border-slate-300 rounded-md mt-3">
           <div className="pt-6 pb-2 px-6 h-[600px] overflow-y-scroll">
-            {!countriesFiltered || countriesFiltered.length === 0 ? (
+            {!countriesFiltered ? (
               <>
                 <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
                 <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
@@ -72,6 +73,8 @@ const Home: React.FC<HomeIprops> = () => {
                 <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
                 <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
               </>
+            ) : countriesFiltered.length === 0 ? (
+              <div>There is no country with that name</div>
             ) : (
               countriesFiltered.map(country => (
                 <Country key={country.code} country={country} />
