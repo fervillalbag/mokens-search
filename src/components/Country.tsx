@@ -1,7 +1,7 @@
 import React from 'react'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 import { IoEarthSharp, IoLanguageSharp } from 'react-icons/io5'
-import { CountryType } from '../interfaces'
+import { CountryType, LanguageIprops } from '../interfaces'
 
 interface CountryIprops {
   country: CountryType
@@ -47,11 +47,11 @@ const Country: React.FC<CountryIprops> = ({ country }) => {
         </div>
         <div className="flex flex-col">
           {country.languages.length === 0 ? (
-            <div className="text-sm">
+            <span className="block text-sm">
               There are no languages in this country
-            </div>
+            </span>
           ) : (
-            country.languages.map((lang, index) => (
+            country.languages.map((lang: LanguageIprops, index: number) => (
               <span
                 key={index}
                 className="block mr-1 uppercase font-bold text-slate-400 text-sm"

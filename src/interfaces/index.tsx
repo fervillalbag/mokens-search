@@ -10,6 +10,6 @@ export interface CountryType {
   languages: LanguageIprops[]
 }
 
-interface LanguageIprops {
+export interface LanguageIprops {
   name: string
 }

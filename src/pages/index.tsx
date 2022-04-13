@@ -1,7 +1,9 @@
 import React, { useRef, useState } from 'react'
 import useSWR from 'swr'
+import Outline from '../components/Button/Outline'
 
 import Country from '../components/Country'
+import Loader from '../components/Loader'
 import client from '../config/apollo'
 import { GET_ALL_COUNTRIES } from '../graphql/queries/countries'
 import { CountryType } from '../interfaces'
@@ -10,7 +12,7 @@ interface HomeIprops {
   countries: CountryType[]
 }
 
-const fetcher = async () => {
+const fetcher = async (): Promise<CountryType[]> => {
   const { data: dataCountries } = await client.query({
     query: GET_ALL_COUNTRIES
   })
@@ -22,16 +24,16 @@ const Home: React.FC<HomeIprops> = () => {
   const inputRef = useRef(null)
   const [valueInput, setValueInput] = useState<string>('')
 
-  const { data: countries } = useSWR('/data', fetcher)
+  const { data: countries } = useSWR<CountryType[]>('/data', fetcher)
 
   const handleResetInput = () => {
     setValueInput('')
     inputRef.current.focus()
   }
 
-  const countriesFiltered = countries?.filter(item => {
-    if (item.name.toLowerCase().includes(valueInput.toLowerCase())) {
-      return item
+  const countriesFiltered: CountryType[] = countries?.filter(country => {
+    if (country.name.toLowerCase().includes(valueInput.toLowerCase())) {
+      return country
     } else {
       return null
     }
@@ -49,30 +51,16 @@ const Home: React.FC<HomeIprops> = () => {
               className="border border-slate-300 pl-6 py-4 rounded-md block w-full focus:outline-none pr-14"
               onChange={e => setValueInput(e.target.value)}
             />
-            <button
-              type="button"
-              className="absolute right-4 top-[50%] translate-y-[-50%] text-sm text-slate-500"
-              onClick={handleResetInput}
-            >
+            <Outline type="button" onClick={handleResetInput}>
               clear
-            </button>
+            </Outline>
           </div>
         </form>
 
         <div className="border bg-slate-200 border-slate-300 rounded-md mt-3">
           <div className="pt-6 pb-2 px-6 h-[600px] overflow-y-scroll">
             {!countriesFiltered ? (
-              <>
-                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
-                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
-                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
-                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
-                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
-                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
-                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
-                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
-                <div className="p-10 bg-slate-100 rounded-md mb-4"></div>
-              </>
+              <Loader />
             ) : countriesFiltered.length === 0 ? (
               <div>There is no country with that name</div>
             ) : (
